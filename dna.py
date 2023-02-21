@@ -2,18 +2,17 @@ from Bio.Seq import Seq
 from Bio import SeqIO
 import os
 import matplotlib.pyplot as plt
+from geneblocks import CommonBlocks
 
 class DNA:
 
-    def __init__(self, file, f) -> None:
-        self.records = list(SeqIO.parse(file, f))
+    def __init__(self, file, ftype) -> None:
+        self.records = list(SeqIO.parse(file, ftype))
 
     def __str__(self) -> str:
-        n = 0
         output = ""
         for record in self.records:
-            n += 1
-            output += f"{n}:\n{record}\n"
+            output += f"{record}\n"
         return output
 
     def statistics(self, fname):
@@ -28,7 +27,7 @@ class DNA:
             bases = ["A", "T", "C", "G"]
             values = [A, T, C, G]
             plt.figure(figsize = (15,7), dpi = 600)
-            plt.bar(bases, values, width = 0.5, color = ["blue", "red", "yellow", "green"])
+            plt.bar(bases, values, width = 0.5, color = ["blue"])
             plt.xlabel("Base")
             plt.ylabel("Count")
             plt.title(f"Base counts for {record.id}")
@@ -37,7 +36,16 @@ class DNA:
         file = open(f"./{fname}/summary_stats.txt", "w")
         file.write(output)
         file.close()
-        return "Sattistical analysis is complete"
+        return "Sattistical analysis complete"
+    
+    def geneblocks(self, fname):
+        sequences = {}
+        for record in self.records:
+            sequences[f"{record.id}"]=f"{record.seq}"
+        common_blocks = CommonBlocks.from_sequences(sequences)
+        ax = common_blocks.plot_common_blocks()
+        ax[0].figure.savefig(f"{fname}.png", bbox_inches = "tight")
+        return "DNA comparison complete"
 
     def translate(self, fname):
         path = os.path.join("./", f"{fname}")
@@ -59,10 +67,8 @@ class DNA:
             file.write("\n>"+record.id+"|-3\n")
             file.write(str(reverse[2:].translate()))
             file.close()
-        return "Sequences have been translated."
+        return "Translation complete"
             
             
 if __name__ == "__main__":
     x = DNA("sequences.fa", "fasta")
-    y = DNA("sequence.gb", "genbank")
-    print(x.statistics("test"))
