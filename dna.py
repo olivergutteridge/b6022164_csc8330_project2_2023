@@ -1,7 +1,9 @@
 from Bio.Seq import Seq
 from Bio import SeqIO
 import os
+import csv
 import matplotlib.pyplot as plt
+import numpy as np
 from geneblocks import CommonBlocks
 
 class DNA:
@@ -18,30 +20,53 @@ class DNA:
     def statistics(self, fname):
         os.mkdir(path = f"./{fname}")
         output = ""
+        ids = []
+        A = []
+        T = []
+        C = []
+        G = []
+        f = open(f"./{fname}/stats.csv", "w", encoding="UTF8")
+        writer = csv.writer(f)
+        headers = ["sequence_id", "length", "A", "T", "C", "G", "GC"]
+        writer.writerow(headers)
         for record in self.records:
+            ids.append(record.id)
             length = len(record.seq)
-            A = record.seq.count("A")
-            T = record.seq.count("T")
-            C = record.seq.count("C")
-            G = record.seq.count("G")
-            bases = ["A", "T", "C", "G"]
-            values = [A, T, C, G]
-            plt.figure(figsize = (15,7), dpi = 600)
-            plt.bar(bases, values, width = 0.5, color = ["blue"])
-            plt.xlabel("Base")
-            plt.ylabel("Count")
-            plt.title(f"Base counts for {record.id}")
-            plt.savefig(f"./{fname}/{record.id}.png")
-            output += f"{record.id}\nLength: {length}\nA: {A}   ({round(A/length*100)}%)\nT: {T}   ({round(T/length*100)}%)\nC: {C}   ({round(C/length*100)}%)\nG: {G}   ({round(G/length*100)}%)\nGC: {round((G+C)/length*100)}%\n\n"
-        file = open(f"./{fname}/summary_stats.txt", "w")
+            a = record.seq.count("A")
+            t = record.seq.count("T")
+            c = record.seq.count("C")
+            g = record.seq.count("G")
+            gc = g + c
+            data = [record.id, length, a, t, c, g, gc]
+            writer.writerow(data)
+            A.append(a)
+            T.append(t)
+            C.append(c)
+            G.append(g)
+            output += f"{record.id}\nLength: {length}\nA: {a}   ({round(a/length*100)}%)\nT: {t}   ({round(t/length*100)}%)\nC: {c}   ({round(c/length*100)}%)\nG: {g}   ({round(g/length*100)}%)\nGC: {round((g+c)/length*100)}%\n\n"
+        A = np.array(A)
+        T = np.array(T)
+        C = np.array(C)
+        G = np.array(G)
+        plt.figure(figsize = (15,7), dpi = 600)
+        plt.bar(ids, A, color = "navy")
+        plt.bar(ids, T, bottom = A, color = "lime")
+        plt.bar(ids, C, bottom = A + T, color = "cyan")
+        plt.bar(ids, G, bottom = A + T + C, color = "fuchsia") 
+        plt.xlabel("Sequence IDs")
+        plt.ylabel("Base Frequency")
+        plt.legend(["A", "T", "C", "G"])
+        plt.savefig(f"./{fname}/base_graph.png")
+        file = open(f"./{fname}/summary.txt", "w")
         file.write(output)
         file.close()
-        return "Sattistical analysis complete"
+        return "Statistical analysis complete"
     
     def geneblocks(self, fname):
         sequences = {}
         for record in self.records:
             sequences[f"{record.id}"]=f"{record.seq}"
+        print(sequences)
         common_blocks = CommonBlocks.from_sequences(sequences)
         ax = common_blocks.plot_common_blocks()
         ax[0].figure.savefig(f"{fname}.png", bbox_inches = "tight")
@@ -72,3 +97,4 @@ class DNA:
             
 if __name__ == "__main__":
     x = DNA("sequences.fa", "fasta")
+    x.statistics("test")
