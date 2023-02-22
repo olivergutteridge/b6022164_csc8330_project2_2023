@@ -29,6 +29,12 @@ class DNA(Sequence):
         self.C = []
         self.G = []
         self.GC = []
+        self.plus1 = []
+        self.plus2 = []
+        self.plus3 = []
+        self.minus1 = []
+        self.minus2 = []
+        self.minus3 = []
 
     def base_count(self):
         for record in self.records:
@@ -83,15 +89,7 @@ class DNA(Sequence):
         return "base frequency graph complete"
 
     def ORF_graph(self, fname):
-        for record in self.records:
-            forward = Seq(record.seq)
-            reverse = forward.reverse_complement()
-            plus1 = forward.translate()
-            plus2 = forward[1:].translate()
-            plus3 = forward[2:].translate()
-            minus1 = reverse.translate()
-            minus2 = reverse[1:].translate()
-            minus3 = reverse[2:].translate()
+        pass
                     
     def statistics(self, fname):
         print(f"Starting statistical analysis of {self.fname}")
@@ -111,24 +109,30 @@ class DNA(Sequence):
         ax[0].figure.savefig(f"{fname}.png", bbox_inches = "tight")
         return "DNA comparison complete"
 
-    def translate(self, fname):
-        path = os.path.join("./", f"{fname}")
-        os.mkdir(path)
+    def translate(self):
         for record in self.records:
             forward = Seq(record.seq)
             reverse = forward.reverse_complement()
-            plus1 = forward.translate()
-            plus2 = forward[1:].translate()
-            plus3 = forward[2:].translate()
-            minus1 = reverse.translate()
-            minus2 = reverse[1:].translate()
-            minus3 = reverse[2:].translate()
-            translations = [SeqRecord(seq = Seq(plus1), id = f"{record.id}", description = "+1 translation"), SeqRecord(seq = Seq(plus2), id = f"{record.id}", description = "+2 translation"), SeqRecord(seq = Seq(plus3), id = f"{record.id}", description = "+3 translation"), SeqRecord(seq = Seq(minus1), id = f"{record.id}", description = "-1 translation"), SeqRecord(seq = Seq(minus2), id = f"{record.id}", description = "-2 translation"), SeqRecord(seq = Seq(minus3), id = f"{record.id}", description = "-3 translation")]
-            file = open(f"./{fname}/{record.id}.fa", "w")
+            self.plus1.append(forward.translate())
+            self.plus2.append(forward[1:].translate())
+            self.plus3.append(forward[2:].translate())
+            self.minus1.append(reverse.translate())
+            self.minus2.append(reverse[1:].translate())
+            self.minus3.append(reverse[2:].translate())
+        return "Sequences translated"
+
+    def translate_tofile(self, fname):
+        self.translate()
+        path = os.path.join("./", f"{fname}")
+        os.mkdir(path)
+        x = len(self.records)
+        for i in range(x):
+            translations = [SeqRecord(seq = Seq(self.plus1[i]), id = f"{self.records[i].id}", description = "+1 translation"), SeqRecord(seq = Seq(self.plus2[i]), id = f"{self.records[i].id}", description = "+2 translation"), SeqRecord(seq = Seq(self.plus3[i]), id = f"{self.records[i].id}", description = "+3 translation"), SeqRecord(seq = Seq(self.minus1[i]), id = f"{self.records[i].id}", description = "-1 translation"), SeqRecord(seq = Seq(self.minus2[i]), id = f"{self.records[i].id}", description = "-2 translation"), SeqRecord(seq = Seq(self.minus3[i]), id = f"{self.records[i].id}", description = "-3 translation")]
+            file = open(f"./{fname}/{self.records[i].id}.fa", "w")
             SeqIO.write(translations, file, "fasta")
             file.close()
         return "Translation complete"
                    
 if __name__ == "__main__":
     x = DNA("hoxC_sequences.fa", "fasta")
-    print(x.statistics("test"))
+    print(x.translate_tofile("hoxC_tr"))
