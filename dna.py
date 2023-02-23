@@ -7,6 +7,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 from sequence import Sequence
+import re
 
 class DNA(Sequence):
 
@@ -28,6 +29,12 @@ class DNA(Sequence):
         self.minus1 = []
         self.minus2 = []
         self.minus3 = []
+        self.tr_plus1 = []
+        self.tr_plus2 = []
+        self.tr_plus3 = []
+        self.tr_minus1 = []
+        self.tr_minus2 = []
+        self.tr_minus3 = []
 
     def base_count(self):
         for record in self.records:
@@ -41,7 +48,33 @@ class DNA(Sequence):
 
     def reading_frames(self):
         for record in self.records:
-            self.
+            forward = record.seq
+            reverse = forward.reverse_complement()
+            self.reverse.append(reverse)
+            self.plus1.append(forward)
+            self.plus2.append(forward[1:])
+            self.plus3.append(forward[2:])
+            self.minus1.append(reverse)
+            self.minus2.append(reverse[1:])
+            self.minus3.append(reverse[2:])
+        return "Sequences shifted into all 6 reading frames"
+
+    def find_orfs(self):
+        x = len(self.records)
+        all_orfs = []
+        pattern = re.compile(r'ATG(?:.{3})*?(?:TAA|TAG|TGA)')
+        for i in range(x):
+            orfs = []
+            reading_frames = [self.plus1[i], self.plus2[i], self.plus3[i], self.minus1[i], self.minus2[i], self.minus3[i]]
+            matches = [pattern.finditer(str(frame)) for frame in reading_frames]
+            for seq_matches in matches:
+                for match in seq_matches:
+                    for match in seq_matches:
+                        orf = match.group()
+                        if len(orf) >= self.orf_cutoff:
+                            orfs.append(orf)
+            all_orfs.append(orfs)
+        return all_orfs
     
     def base_txt(self, odir):
         output = ""
@@ -85,36 +118,10 @@ class DNA(Sequence):
         plt.savefig(f"./{odir}/base_frequency.png")
         plt.close()
         return "base frequency graph complete"
-        
-    def locate_ORFs(self):
-        self.translate()
-        x = len(self.records)
-        all_orfs = []
-        for i in range(x):
-            translations = [self.plus1[i], self.plus2[i], self.plus3[i], self.minus1[i], self.minus2[i], self.minus3[i]]
-            current_orf = []
-            orfs = []
-            for tr in translations:
-                for aa in tr:
-                    if aa == "*":
-                        if current_orf:
-                            for p in current_orf:
-                                if len(p) > self.orf_cutoff:
-                                    orfs.append(p)
-                                else:
-                                    pass
-                            current_orf = []
-                    else:
-                        if aa == "M":
-                            current_orf.append("")
-                        for i in range(len(current_orf)):
-                            current_orf[i] += aa
-            all_orfs.append(orfs)
-        return all_orfs
 
     def orfGC_graph(self, odir):
         avg_orf_length  =  []
-        for orfs in self.locate_ORFs():
+        for orfs in self.find_orfs():
             orf_lengths = []
             for orf in orfs:
                 orf_lengths.append(len(orf))
@@ -125,21 +132,20 @@ class DNA(Sequence):
             gc.append(round(x1/x2*100))
         plt.figure(figsize = (9,9), dpi = 600)
         plt.scatter(gc, avg_orf_length, color = "navy")
-        plt.title(f"GC content vs Average ORF length for sequences in f{self.odir}")
+        plt.title(f"GC content vs Average ORF length for sequences in {self.file}")
         plt.xlabel("GC content (%)")
-        plt.ylabel("Average ORF length (aa)")
+        plt.ylabel("Average ORF length (base)")
         plt.savefig(f"./{odir}/GC_ORF.png")
         plt.close()
         return "gc vs avg orf length graph complete"
 
     def r_complement(self, odir):
-        fname = self.file
         x = len(self.records)
         reverses = []
         for i in range(x):
             reverse = SeqRecord(seq = Seq(self.reverse[i]), id = f"{self.records[i].id}", description = "reverse complement")
             reverses.append(reverse)
-        file = open(f"./{odir}/{fname}_rComp.fa", "w")
+        file = open(f"./{odir}/rComp_{self.file}.fa", "w")
         SeqIO.write(reverses, file, "fasta")
         file.close()
         return f"Reverse complements wrote to {self.odir}_rComp.fa"
@@ -148,19 +154,19 @@ class DNA(Sequence):
         for record in self.records:
             forward = Seq(record.seq)
             reverse = forward.reverse_complement()
-            self.reverse.append(reverse)
-            self.plus1.append(forward.translate())
-            self.plus2.append(forward[1:].translate())
-            self.plus3.append(forward[2:].translate())
-            self.minus1.append(reverse.translate())
-            self.minus2.append(reverse[1:].translate())
-            self.minus3.append(reverse[2:].translate())
+            self.tr_plus1.append(forward.translate())
+            self.tr_plus2.append(forward[1:].translate())
+            self.tr_plus3.append(forward[2:].translate())
+            self.tr_minus1.append(reverse.translate())
+            self.tr_minus2.append(reverse[1:].translate())
+            self.tr_minus3.append(reverse[2:].translate())
         return "Sequences translated"
 
     def translate_tofile(self, odir):
+        self.translate()
         x = len(self.records)
         for i in range(x):
-            translations = [SeqRecord(seq = Seq(self.plus1[i]), id = f"{self.records[i].id}", description = "+1 translation"), SeqRecord(seq = Seq(self.plus2[i]), id = f"{self.records[i].id}", description = "+2 translation"), SeqRecord(seq = Seq(self.plus3[i]), id = f"{self.records[i].id}", description = "+3 translation"), SeqRecord(seq = Seq(self.minus1[i]), id = f"{self.records[i].id}", description = "-1 translation"), SeqRecord(seq = Seq(self.minus2[i]), id = f"{self.records[i].id}", description = "-2 translation"), SeqRecord(seq = Seq(self.minus3[i]), id = f"{self.records[i].id}", description = "-3 translation")]
+            translations = [SeqRecord(seq = Seq(self.tr_plus1[i]), id = f"{self.records[i].id}", description = "+1 translation"), SeqRecord(seq = Seq(self.tr_plus2[i]), id = f"{self.records[i].id}", description = "+2 translation"), SeqRecord(seq = Seq(self.tr_plus3[i]), id = f"{self.records[i].id}", description = "+3 translation"), SeqRecord(seq = Seq(self.tr_minus1[i]), id = f"{self.records[i].id}", description = "-1 translation"), SeqRecord(seq = Seq(self.tr_minus2[i]), id = f"{self.records[i].id}", description = "-2 translation"), SeqRecord(seq = Seq(self.tr_minus3[i]), id = f"{self.records[i].id}", description = "-3 translation")]
             file = open(f"./{odir}/{self.records[i].id}_tr.fa", "w")
             SeqIO.write(translations, file, "fasta")
             file.close()
@@ -170,6 +176,7 @@ class DNA(Sequence):
         print(f"Starting statistical analysis of {self.file}")
         os.mkdir(path = f"./{self.odir}")
         self.base_count()
+        self.reading_frames()
         self.base_txt(odir=self.odir)
         self.base_csv(odir=self.odir)
         self.base_graph(odir=self.odir)
@@ -179,5 +186,6 @@ class DNA(Sequence):
         return "Statistical analysis complete"
                    
 if __name__ == "__main__":
-    x = DNA("hoxC_sequences.fa")
-    print(x.driver("t"))
+    x = DNA("hoxC_sequences.fa", "t")
+    print(x.driver())
+    
