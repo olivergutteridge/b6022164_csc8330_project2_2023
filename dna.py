@@ -1,3 +1,4 @@
+import statistics
 from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
@@ -50,7 +51,7 @@ class DNA(Sequence):
         output = ""
         x = len(self.records)
         for i in range(x):
-            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.G[i]+self.C[i])/self.lengths[i]*100)}%\n\n"
+            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.GC[i])/self.lengths[i]*100)}%\n\n"
         file = open(f"./{fname}/base_stats.txt", "w")
         file.write(output)
         file.close()
@@ -84,13 +85,56 @@ class DNA(Sequence):
         plt.xlabel("Sequence IDs")
         plt.ylabel("Base Frequency")
         plt.legend(["A", "T", "C", "G"])
-        plt.xticks(rotation=45, fontsize = 5)
-        plt.savefig(f"./{fname}/base_frequency_graph.png")
+        plt.xticks(rotation = 45, fontsize = 5)
+        plt.savefig(f"./{fname}/base_frequency.png")
+        plt.close()
         return "base frequency graph complete"
+        
+    def locate_ORFs(self):
+        self.translate()
+        x = len(self.records)
+        all_orfs = []
+        for i in range(x):
+            translations = [self.plus1[i], self.plus2[i], self.plus3[i], self.minus1[i], self.minus2[i], self.minus3[i]]
+            current_orf = []
+            orfs = []
+            for tr in translations:
+                for aa in tr:
+                    if aa == "*":
+                        if current_orf:
+                            for p in current_orf:
+                                if len(p) > 30:
+                                    orfs.append(p)
+                                else:
+                                    pass
+                            current_orf = []
+                    else:
+                        if aa == "M":
+                            current_orf.append("")
+                        for i in range(len(current_orf)):
+                            current_orf[i] += aa
+            all_orfs.append(orfs)
+        return all_orfs
 
     def ORF_graph(self, fname):
-        pass
-                    
+        avg_orf_length  =  []
+        for orfs in self.locate_ORFs():
+            orf_lengths = []
+            for orf in orfs:
+                orf_lengths.append(len(orf))
+            avg_length = statistics.mean(orf_lengths)
+            avg_orf_length.append(avg_length)
+        gc = []
+        for x1, x2 in zip(self.GC, self.lengths):
+            gc.append(round(x1/x2*100))
+        plt.scatter(gc, avg_orf_length, color = "navy")
+        plt.title(f"Total GC content vs Average ORF length for sequences in f{self.fname}")
+        plt.xlabel("Total GC content")
+        plt.ylabel("Average ORF length (aa)")
+        plt.savefig(f"./{fname}/GC_ORF.png")
+        plt.close()
+        return "GC vs ORF graph complete"
+
     def statistics(self, fname):
         print(f"Starting statistical analysis of {self.fname}")
         os.mkdir(path = f"./{fname}")
@@ -98,6 +142,7 @@ class DNA(Sequence):
         self.base_txt(fname=fname)
         self.base_csv(fname=fname)
         self.base_graph(fname=fname)
+        self.ORF_graph(fname=fname)
         return "Statistical analysis complete"
     
     def geneblocks(self, fname):
@@ -135,4 +180,4 @@ class DNA(Sequence):
                    
 if __name__ == "__main__":
     x = DNA("hoxC_sequences.fa", "fasta")
-    print(x.translate_tofile("hoxC_tr"))
+    print(x.statistics("t"))
