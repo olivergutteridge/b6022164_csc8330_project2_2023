@@ -6,7 +6,6 @@ import os
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-from geneblocks import CommonBlocks
 
 class Sequence:
 
@@ -116,7 +115,7 @@ class DNA(Sequence):
             all_orfs.append(orfs)
         return all_orfs
 
-    def ORF_graph(self, fname):
+    def orfGC_graph(self, fname):
         avg_orf_length  =  []
         for orfs in self.locate_ORFs():
             orf_lengths = []
@@ -127,13 +126,14 @@ class DNA(Sequence):
         gc = []
         for x1, x2 in zip(self.GC, self.lengths):
             gc.append(round(x1/x2*100))
+        plt.figure(figsize = (9,9), dpi = 600)
         plt.scatter(gc, avg_orf_length, color = "navy")
-        plt.title(f"Total GC content vs Average ORF length for sequences in f{self.fname}")
-        plt.xlabel("Total GC content")
+        plt.title(f"GC content vs Average ORF length for sequences in f{self.fname}")
+        plt.xlabel("GC content (%)")
         plt.ylabel("Average ORF length (aa)")
         plt.savefig(f"./{fname}/GC_ORF.png")
         plt.close()
-        return "GC vs ORF graph complete"
+        return "gc vs avg orf length graph complete"
 
     def statistics(self, fname):
         print(f"Starting statistical analysis of {self.fname}")
@@ -142,17 +142,8 @@ class DNA(Sequence):
         self.base_txt(fname=fname)
         self.base_csv(fname=fname)
         self.base_graph(fname=fname)
-        self.ORF_graph(fname=fname)
+        self.orfGC_graph(fname=fname)
         return "Statistical analysis complete"
-    
-    def geneblocks(self, fname):
-        sequences = {}
-        for record in self.records:
-            sequences[f"{record.id}"]=f"{record.seq}"
-        common_blocks = CommonBlocks.from_sequences(sequences)
-        ax = common_blocks.plot_common_blocks()
-        ax[0].figure.savefig(f"{fname}.png", bbox_inches = "tight")
-        return "DNA comparison complete"
 
     def translate(self):
         for record in self.records:
