@@ -151,7 +151,7 @@ class DNA(Sequence):
         plt.close()
         return "base frequency graph complete"
 
-    def seq_orfGC_graph(self, out_dir):
+    def seq_orfgc_graph(self, out_dir):
         """Creates a scatter plot of GC content vs avg ORF length for sequence in input"""
         avg_orf_length  =  []
         for orfs in self.all_orfs:
@@ -252,7 +252,7 @@ class DNA(Sequence):
         self.base_txt(out_dir=self.out_dir)
         self.base_csv(out_dir=self.out_dir)
         self.base_freq_graph(out_dir=self.out_dir)
-        self.seq_orfGC_graph(out_dir=self.out_dir)
+        self.seq_orfgc_graph(out_dir=self.out_dir)
         self.seq_length_orf_graph(out_dir=self.out_dir)
         print(f"Complex statistical analysis saved to ./{self.out_dir}/stats")
         return None
