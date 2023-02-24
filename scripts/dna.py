@@ -95,7 +95,7 @@ class DNA(Sequence):
         if self.save_orfs:
             os.mkdir(path = f"./{self.out_dir}/orfs")
             for i in range(len(self.records)):
-                file = open(f"./{self.out_dir}/orfs/{self.records[i].id}_orfs", "w")
+                file = open(f"./{self.out_dir}/orfs/{self.records[i].id}_orfs.fa", "w")
                 current_orfs = self.all_orfs[i]
                 n = 0
                 for orf in current_orfs:
@@ -199,7 +199,7 @@ class DNA(Sequence):
         for i in range(len(self.records)):
             reverse = SeqRecord(seq = Seq(self.reverse[i]), id = f"{self.records[i].id}", description = "reverse complement")
             reverses.append(reverse)
-        file = open(f"./{out_dir}/rComps_{self.file}.fa", "w")
+        file = open(f"./{out_dir}/rComps_{self.file}", "w")
         SeqIO.write(reverses, file, "fasta")
         file.close()
         return f"reverse complements wrote to {self.out_dir}_rComp.fa"
@@ -280,10 +280,8 @@ class DNA(Sequence):
         self.make_outdir()
         if self.basic_stats and self.complex_stats:
             print("The arguments '--basic-stats' and '--complex-stats' cannot be selected together")
-            os.rmdir(path = f"./{self.out_dir}")
         elif not self.basic_stats and not self.complex_stats and not self.translate and not self.save_orfs:
-            print("Please select either '--basic-stats'/'--complex-stats' and or '--translate' and or '--save-orfs'")
-            os.rmdir(path = f"./{self.out_dir}")
+            print("Please select one of the following '--basic-stats', '--complex-stats', '--translate', '--save-orfs'")
         elif self.basic_stats and not self.complex_stats and not self.translate:
             self.b_stats()
         elif self.complex_stats and not self.basic_stats and not self.translate:

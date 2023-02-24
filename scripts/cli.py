@@ -2,6 +2,7 @@ from dna import DNA
 import argparse
 
 def cli():
+    """Command line interface for dnaStat"""
     parser = argparse.ArgumentParser(prog = "dnaStat", description = "A simple program that produces statistical analysis of DNA sequences")
     parser.add_argument("file", help = "Input file for analysis", action = "store", type = str)
     parser.add_argument("out_dir", help = "Prefix for output directory", action = "store", type = str)
