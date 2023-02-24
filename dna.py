@@ -11,14 +11,15 @@ import re
 
 class DNA(Sequence):
 
-    def __init__(self, file, odir, orf_cutoff, basic_stat, complex_stat, translation) -> None:
+    def __init__(self, file, odir, orf_cutoff, basic_stats, complex_stats, translate) -> None:
+        """Constructor for DNA class"""
         super().__init__(file)
         self.file = str(file)
         self.odir = odir
         self.orf_cutoff = orf_cutoff
-        self.basic_stat = basic_stat
-        self.complex_stat = complex_stat
-        self.translation = translation
+        self.basic_stats = basic_stats
+        self.complex_stats = complex_stats
+        self.translate= translate
         self.lengths = []
         self.A = []
         self.T = []
@@ -32,14 +33,9 @@ class DNA(Sequence):
         self.minus1 = []
         self.minus2 = []
         self.minus3 = []
-        self.tr_plus1 = []
-        self.tr_plus2 = []
-        self.tr_plus3 = []
-        self.tr_minus1 = []
-        self.tr_minus2 = []
-        self.tr_minus3 = []
 
     def check_dna(self):
+        """Checks if input is DNA"""
         for record in self.records:
             for base in record.seq:
                 if base == "A" or "T" or "C" or "G":
@@ -48,6 +44,7 @@ class DNA(Sequence):
                     raise TypeError("Input sequences must be DNA")
 
     def base_count(self):
+        """Calculates base counts, lengths and GC content for each sequence in input"""
         for record in self.records:
             self.lengths.append(len(record.seq))
             self.A.append(record.seq.count("A"))
@@ -58,6 +55,7 @@ class DNA(Sequence):
         return "bases counted"
 
     def reading_frames(self):
+        """Transforms each sequence in input into all 6 reading frames"""
         for record in self.records:
             forward = record.seq
             reverse = forward.reverse_complement()
@@ -71,10 +69,10 @@ class DNA(Sequence):
         return "sequences shifted into all 6 reading frames"
 
     def find_orfs(self):
-        x = len(self.records)
+        """Locates ORFs within each sequence of input"""
         all_orfs = []
         pattern = re.compile(r'ATG(?:.{3})*?(?:TAA|TAG|TGA)')
-        for i in range(x):
+        for i in range(len(self.records)):
             orfs = []
             reading_frames = [self.plus1[i], self.plus2[i], self.plus3[i], self.minus1[i], self.minus2[i], self.minus3[i]]
             matches = [pattern.finditer(str(frame)) for frame in reading_frames]
@@ -88,30 +86,32 @@ class DNA(Sequence):
         return all_orfs
     
     def base_txt(self, odir):
+        """Creates a text file containing basic statistics about each sequence in input"""
+        all_orfs = self.find_orfs()
         output = ""
-        x = len(self.records)
-        for i in range(x):
-            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.GC[i])/self.lengths[i]*100)}%\n\n"
+        for i in range(len(self.records)):
+            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.GC[i])/self.lengths[i]*100)}%\nORFs: {len(all_orfs[i])}\n\n"
         file = open(f"./{odir}/stats/base_stats.txt", "w")
         file.write(output)
         file.close()
         return "text file complete"
 
     def base_csv(self, odir):
+        """Creates a csv file containing basic statistics about each sequence in input"""
+        all_orfs = self.find_orfs()
         f = open(f"./{odir}/stats/base_stats.csv", "w", encoding="UTF8")
         writer = csv.writer(f)
-        headers = ["sequence_id", "length", "A", "T", "C", "G", "GC"]
+        headers = ["sequence_id", "length", "A", "T", "C", "G", "GC", "ORFs"]
         writer.writerow(headers)
-        x = len(self.records)
-        for i in range(x):
-            data = [self.records[i].id, self.lengths[i], self.A[i], self.T[i], self.C[i], self.G[i], self.GC[i]]
+        for i in range(len(self.records)):
+            data = [self.records[i].id, self.lengths[i], self.A[i], self.T[i], self.C[i], self.G[i], self.GC[i], len(all_orfs[i])]
             writer.writerow(data)
         return "csv file complete"
     
-    def base_graph(self, odir):
+    def base_freq_graph(self, odir):
+        """Creates a stacked bar plot of base frequencies for sequence in input"""
         ids = []
-        x = len(self.records)
-        for i in range(x):
+        for i in range(len(self.records)):
             ids.append(self.records[i].id)
         A = np.array(self.A)
         T = np.array(self.T)
@@ -130,7 +130,8 @@ class DNA(Sequence):
         plt.close()
         return "base frequency graph complete"
 
-    def orfGC_graph(self, odir):
+    def seq_orfGC_graph(self, odir):
+        """Creates a scatter plot of GC content vs avg ORF length for sequence in input"""
         avg_orf_length  =  []
         for orfs in self.find_orfs():
             orf_lengths = []
@@ -143,17 +144,32 @@ class DNA(Sequence):
             gc.append(round(x1/x2*100))
         plt.figure(figsize = (9,9), dpi = 600)
         plt.scatter(gc, avg_orf_length, color = "navy")
-        plt.title(f"GC content vs Average ORF length for sequences in {self.file}")
-        plt.xlabel("GC content (%)")
-        plt.ylabel("Average ORF length (base)")
+        plt.title(f"Sequence GC content vs Average ORF length for sequences in {self.file}")
+        plt.xlabel("Sequence GC content (%)")
+        plt.ylabel("Average ORF length (bp)")
         plt.savefig(f"./{odir}/stats/GC_ORF.png")
         plt.close()
         return "gc vs avg orf length graph complete"
 
+    def seq_length_orf_graph(self, odir):
+        """Creates a scatter plot of seq length vs total ORFs for sequence in input"""
+        seq_lengths = [length for length in self.lengths]
+        orf_count = []
+        for orfs in self.find_orfs():
+            orf_count.append(len(orfs))
+        plt.figure(figsize = (9,9), dpi = 600)
+        plt.scatter(seq_lengths, orf_count, color = "lime")
+        plt.title(f"Sequence length vs Number of ORFs for sequences in {self.file}")
+        plt.xlabel("Sequence length (bp)")
+        plt.ylabel("Number of ORFs")
+        plt.savefig(f"./{odir}/stats/seqLength_ORF.png")
+        plt.close()
+        return "seq length vs orf count graph complete"
+
     def r_complement(self, odir):
-        x = len(self.records)
+        """Calculates reverse complement for sequence in input"""
         reverses = []
-        for i in range(x):
+        for i in range(len(self.records)):
             reverse = SeqRecord(seq = Seq(self.reverse[i]), id = f"{self.records[i].id}", description = "reverse complement")
             reverses.append(reverse)
         file = open(f"./{odir}/translations/rComp_{self.file}.fa", "w")
@@ -161,67 +177,77 @@ class DNA(Sequence):
         file.close()
         return f"reverse complements wrote to {self.odir}_rComp.fa"
 
-    def translate(self):
+    def translate_seqs(self, odir):
+        """Translates all sequences in all reading frames for sequence in input"""
+        tr_plus1 = []
+        tr_plus2 = []
+        tr_plus3 = []
+        tr_minus1 = []
+        tr_minus2 = []
+        tr_minus3 = []
         for record in self.records:
             forward = Seq(record.seq)
             reverse = forward.reverse_complement()
-            self.tr_plus1.append(forward.translate())
-            self.tr_plus2.append(forward[1:].translate())
-            self.tr_plus3.append(forward[2:].translate())
-            self.tr_minus1.append(reverse.translate())
-            self.tr_minus2.append(reverse[1:].translate())
-            self.tr_minus3.append(reverse[2:].translate())
-        return "sequences translated"
-
-    def translate_tofile(self, odir):
-        self.translate()
-        x = len(self.records)
-        for i in range(x):
-            translations = [SeqRecord(seq = Seq(self.tr_plus1[i]), id = f"{self.records[i].id}", description = "+1 translation"), SeqRecord(seq = Seq(self.tr_plus2[i]), id = f"{self.records[i].id}", description = "+2 translation"), SeqRecord(seq = Seq(self.tr_plus3[i]), id = f"{self.records[i].id}", description = "+3 translation"), SeqRecord(seq = Seq(self.tr_minus1[i]), id = f"{self.records[i].id}", description = "-1 translation"), SeqRecord(seq = Seq(self.tr_minus2[i]), id = f"{self.records[i].id}", description = "-2 translation"), SeqRecord(seq = Seq(self.tr_minus3[i]), id = f"{self.records[i].id}", description = "-3 translation")]
+            tr_plus1.append(forward.translate())
+            tr_plus2.append(forward[1:].translate())
+            tr_plus3.append(forward[2:].translate())
+            tr_minus1.append(reverse.translate())
+            tr_minus2.append(reverse[1:].translate())
+            tr_minus3.append(reverse[2:].translate())
+        for i in range(len(self.records)):
+            translations = [SeqRecord(seq = Seq(tr_plus1[i]), id = f"{self.records[i].id}", description = "+1 translation"), SeqRecord(seq = Seq(tr_plus2[i]), id = f"{self.records[i].id}", description = "+2 translation"), SeqRecord(seq = Seq(tr_plus3[i]), id = f"{self.records[i].id}", description = "+3 translation"), SeqRecord(seq = Seq(tr_minus1[i]), id = f"{self.records[i].id}", description = "-1 translation"), SeqRecord(seq = Seq(tr_minus2[i]), id = f"{self.records[i].id}", description = "-2 translation"), SeqRecord(seq = Seq(tr_minus3[i]), id = f"{self.records[i].id}", description = "-3 translation")]
             file = open(f"./{odir}/translations/{self.records[i].id}_tr.fa", "w")
             SeqIO.write(translations, file, "fasta")
             file.close()
         return "translation complete"
 
-    def b_stat(self):
+    def b_stats(self):
+        """Calls each function neccessary for --basic-stats"""
         print(f"Starting basic statistical analysis of {self.file}")
         os.mkdir(path = f"./{self.odir}/stats")
         self.base_count()
         self.reading_frames()
         self.base_txt(odir=self.odir)
         self.base_csv(odir=self.odir)
-        self.base_graph(odir=self.odir)
+        self.base_freq_graph(odir=self.odir)
 
-    def c_stat(self):
+    def c_stats(self):
+        """Calls each function neccessary for --complex-stats"""
         print(f"Starting complex statistical analysis of {self.file}")
         os.mkdir(path = f"./{self.odir}/stats")
         self.base_count()
         self.reading_frames()
         self.base_txt(odir=self.odir)
         self.base_csv(odir=self.odir)
-        self.base_graph(odir=self.odir)
-        self.orfGC_graph(odir=self.odir)
+        self.base_freq_graph(odir=self.odir)
+        self.seq_orfGC_graph(odir=self.odir)
+        self.seq_length_orf_graph(odir=self.odir)
 
     def tr(self):
+        """Calls each function neccessary for --translate"""
         print(f"Translating sequences in {self.file}")
         os.mkdir(path = f"./{self.odir}/translations")
         self.reading_frames()
         self.r_complement(odir=self.odir)
-        self.translate_tofile(odir=self.odir)
+        self.translate_seqs(odir=self.odir)
 
     def core(self):
+        """Logic for arguments in cli.py"""
         self.check_dna()
         os.mkdir(path = f"./{self.odir}")
-        if self.basic_stat and self.complex_stat:
-            print("The arguments '--basic-stat' and '--complex-stat' cannot be selected together")
-        elif self.complex_stat and not self.basic_stat and not self.translate:
-            self.c_stat()
-        elif self.translation and not self.basic_stat and not self.complex_stat:
+        if self.basic_stats and self.complex_stats:
+            print("The arguments '--basic-stats' and '--complex-stats' cannot be selected together")
+        elif self.basic_stats and not self.complex_stats and not self.translate:
+            self.b_stats()
+        elif self.complex_stats and not self.basic_stats and not self.translate:
+            self.c_stats()
+        elif self.translate and not self.basic_stats and not self.complex_stats:
             self.tr()
-        elif self.basic_stat and self.translate and not self.complex_stat:
-            self.b_stat()
+        elif self.basic_stats and self.translate and not self.complex_stats:
+            self.b_stats()
             self.tr()
-        elif self.complex_stat and self.translate and not self.basic_stat:
-            self.complex_stat()
+        elif self.complex_stats and self.translate and not self.basic_stats:
+            self.c_stats()
             self.tr()
-        return "Analysis complete"
+        print("Analysis complete")
+        return None
