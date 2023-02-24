@@ -60,6 +60,7 @@ class DNA(Sequence):
             shutil.rmtree(path=path)
         # create out_dir
         os.mkdir(path=path)
+        return f"./{self.out_dir} created"
 
     def base_count(self):
         """Calculates base counts, lengths and GC content for each sequence in input"""
@@ -72,7 +73,7 @@ class DNA(Sequence):
             self.C.append(record.seq.count("C"))
             self.G.append(record.seq.count("G"))
             self.GC.append(record.seq.count("G")+record.seq.count("C"))
-        return "bases counted"
+        return "bases frequencies calculated"
 
     def reading_frames(self):
         """Transforms each sequence in input into all 6 reading frames"""
@@ -130,7 +131,9 @@ class DNA(Sequence):
                     n += 1
                 file.close()
             print(f"ORFs saved to ./{self.out_dir}/orfs")
-        return "orfs located"
+            return "_orf.fa files created"
+        else:   
+            return "orfs located"
     
     def base_txt(self, out_dir):
         """Creates a text file containing basic statistics about each sequence in input"""
@@ -145,7 +148,7 @@ class DNA(Sequence):
         file.write(output)
         # close file
         file.close()
-        return "text file complete"
+        return "base_stats.txt created"
 
     def base_csv(self, out_dir):
         """Creates a csv file containing basic statistics about each sequence in input"""
@@ -162,7 +165,7 @@ class DNA(Sequence):
             writer.writerow(data)
         # close file
         file.close()
-        return "csv file complete"
+        return "base_stats.csv created"
     
     def base_freq_graph(self, out_dir):
         """Creates a stacked bar plot of base frequencies for sequence in input"""
@@ -193,7 +196,7 @@ class DNA(Sequence):
         # save figure to file and close
         plt.savefig(f"./{out_dir}/stats/base_frequency.png")
         plt.close()
-        return "base frequency graph complete"
+        return "base_frequency.png created"
 
     def seq_orfgc_graph(self, out_dir):
         """Creates a scatter plot of GC content vs avg ORF length for sequence in input"""
@@ -233,7 +236,7 @@ class DNA(Sequence):
         # save figure to file and close
         plt.savefig(f"./{out_dir}/stats/GC_ORF.png")
         plt.close()
-        return "gc vs avg orf length graph complete"
+        return "GC_ORF.png graph complete"
 
     def seq_length_orf_graph(self, out_dir):
         """Creates a scatter plot of seq length vs total ORFs for sequence in input"""
@@ -260,7 +263,7 @@ class DNA(Sequence):
         # save figure to file and close
         plt.savefig(f"./{out_dir}/stats/seqLength_ORF.png")
         plt.close()
-        return "seq length vs orf count graph complete"
+        return f"seqLength_ORF.png created"
 
     def r_complement(self, out_dir):
         """Calculates reverse complement for sequence in input"""
@@ -275,7 +278,7 @@ class DNA(Sequence):
         file = open(f"./{out_dir}/rComps_{self.file}", "w")
         SeqIO.write(reverses, file, "fasta")
         file.close()
-        return f"reverse complements wrote to {self.out_dir}_rComp.fa"
+        return f"reverse complements calculated"
 
     def translate_seqs(self, out_dir):
         """Translates all sequences in all reading frames for sequence in input"""
@@ -306,7 +309,7 @@ class DNA(Sequence):
             file = open(f"./{out_dir}/translations/{self.records[i].id}_tr.fa", "w")
             SeqIO.write(translations, file, "fasta")
             file.close()
-        return "translation complete"
+        return f"translations for sequences in {self.file} saved to ./{out_dir}/translations/"
 
     def b_stats(self):
         """Calls each function neccessary for --basic-stats"""
