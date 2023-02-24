@@ -103,7 +103,7 @@ class DNA(Sequence):
                     SeqIO.write(orf_tofile, file, "fasta")
                     n += 1
                 file.close()
-        print(f"ORFs saved to ./{self.out_dir}/orfs")
+            print(f"ORFs saved to ./{self.out_dir}/orfs")
         return "orfs located"
     
     def base_txt(self, out_dir):
@@ -137,11 +137,12 @@ class DNA(Sequence):
         T = np.array(self.T)
         C = np.array(self.C)
         G = np.array(self.G)
-        plt.figure(figsize = (15,7), dpi = 600)
+        plt.figure(figsize = (25,15), dpi = 600)
         plt.bar(ids, A, color = "navy")
         plt.bar(ids, T, bottom = A, color = "lime")
         plt.bar(ids, C, bottom = A + T, color = "cyan")
         plt.bar(ids, G, bottom = A + T + C, color = "fuchsia") 
+        plt.title(f"Base frequencies for sequences in {self.file}", fontsize = 30)
         plt.xlabel("Sequence IDs")
         plt.ylabel("Base Frequency")
         plt.legend(["A", "T", "C", "G"])
