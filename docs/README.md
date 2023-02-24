@@ -30,6 +30,29 @@ The package was built as part of CSC8330 at Newcastle University.
 
 The file hoxC_sequences.fa is provided for example usage. The file contains 15 hoxC DNA sequences in .fa format from various organisms. At present, dnaStat is limited to .fa files. Please run all commands from the scripts directory or use relative paths.
 
-Run basic statistical analysis 
+### --basic-stat
+
+Cannot be used in conjuction with '--complex-stat'
 
 ```python3 dnaStat.py hoxC_sequences.fa test --basic-stat```
+
+The outputs of this command will be stored in ./test/stat. Files base_stats.txt and base_stats.csv contain basic summary statistics, base_frequency.png contains a stacked bar plot of base frequencies for sequences in input.
+
+![Alt text](../example_images/base_frequency.png?raw=true "base_frequency.png for hoxC_sequences.fa")
+
+### --complex-stat
+
+Cannot be used in conjuction with '--basic-stat'
+
+```python3 dnaStat.py hoxC_sequences.fa test --complex-stat```
+
+The outputs of this command will be stored in ./test/stat. The directory will contain the same outputs as '--basic-stat' and also GC_ORF.png and seqLength_ORF.png. Both are scatter plots of avg ORF length vs seq GC content and seq length vs ORF count respectively for sequences in input.
+
+![Alt text](../example_images/GC_ORF.png?raw=true"GC_ORF.png for hoxC_sequences.fa")
+
+![Alt text](../example_images/seqLength_ORF.png?raw=true"seqLength_ORF.png for hoxC_sequences.fa")
+
+### --translate
+
+
+
