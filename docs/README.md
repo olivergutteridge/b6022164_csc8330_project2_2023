@@ -1,4 +1,4 @@
-# :snake: dnaStat :snake:
+# dnaStat
 
 ## Overview
 
