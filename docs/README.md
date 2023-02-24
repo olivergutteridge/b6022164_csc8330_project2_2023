@@ -71,4 +71,14 @@ The outputs of this command are stored in ./test/orfs. Each .fa file in the dire
 
 The outputs of this command are stored in ./test/translations. Each .fa file in the directory contains all translations of a sequence in input. A rComps_{input}.fa is also produced containing the reverse complement of each sequence in input. This is stored in ./test.
 
+## Credits
+
+Thanks to Dr Jichun Li for all his support throughout the module.
+
+## Future
+
+I hope to extend the utility of dnaStat by allowing the use of differnt file formats, adding the ability to identify ORFs and make further statistical inferences from DNA sequences. I also hope to extend the package to include rnaStat, a statistical analysis tool for RNA sequneces.
+
+
+
 
