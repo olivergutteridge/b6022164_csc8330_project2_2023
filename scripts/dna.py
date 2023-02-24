@@ -225,7 +225,7 @@ class DNA(Sequence):
         # specify figure size and dpi
         plt.figure(figsize = (9,9), dpi = 600)
         # plot scatter plot
-        plt.scatter(gc, avg_orf_length, color = "navy")
+        plt.scatter(gc, avg_orf_length, marker = "x", color = "navy")
         # caluclate  and add regression line https://www.python-graph-gallery.com/scatterplot-with-regression-fit-in-matplotlib
         a, b = np.polyfit(gc, avg_orf_length, 1)
         plt.plot(gc, a*gc+b, color = "lime")
@@ -252,7 +252,7 @@ class DNA(Sequence):
         # specify figure size and dpi
         plt.figure(figsize = (9,9), dpi = 600)
         # plot scatter plot
-        plt.scatter(seq_lengths, orf_count, color = "lime")
+        plt.scatter(seq_lengths, orf_count, marker = "x", color = "lime")
         # caluclate  and add regression line https://www.python-graph-gallery.com/scatterplot-with-regression-fit-in-matplotlib
         a, b = np.polyfit(seq_lengths, orf_count, 1)
         plt.plot(seq_lengths, a*seq_lengths+b, color = "navy")
