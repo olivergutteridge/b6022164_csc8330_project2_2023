@@ -2,6 +2,8 @@
 
 ## Overview
 
+https://github.com/newcastleuniversity-computing/b6022164_csc8330_project2_2023
+
 dnaStat is a python package for the analysis DNA sequence data. Tools can be selected to produce graphical analysis, locate ORFs and translate DNA sequences into all reading frames. 
 
 Additional usage information can be found using the command 
@@ -78,6 +80,8 @@ Thanks to Dr Jichun Li for all his support throughout the module.
 ## Future
 
 I hope to extend the utility of dnaStat by allowing the use of differnt file formats, adding the ability to identify ORFs and make further statistical inferences from DNA sequences. I also hope to extend the package to include rnaStat, a statistical analysis tool for RNA sequneces.
+
+
 
 
 
