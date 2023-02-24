@@ -3,6 +3,7 @@ from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 import os
+import shutil
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
@@ -44,6 +45,13 @@ class DNA(Sequence):
                     pass
                 else:
                     raise TypeError("Input sequences must be DNA")
+
+    def make_outdir(self):
+        """Make out_dir and overwrite if already exists"""
+        path = f"./{self.out_dir}"
+        if os.path.exists(path=path):
+            shutil.rmtree(path=path)
+        os.mkdir(path=path)
 
     def base_count(self):
         """Calculates base counts, lengths and GC content for each sequence in input"""
@@ -95,6 +103,7 @@ class DNA(Sequence):
                     SeqIO.write(orf_tofile, file, "fasta")
                     n += 1
                 file.close()
+        print(f"ORFs saved to ./{self.out_dir}/orfs")
         return "orfs located"
     
     def base_txt(self, out_dir):
@@ -190,7 +199,7 @@ class DNA(Sequence):
         for i in range(len(self.records)):
             reverse = SeqRecord(seq = Seq(self.reverse[i]), id = f"{self.records[i].id}", description = "reverse complement")
             reverses.append(reverse)
-        file = open(f"./{out_dir}/translations/rComp_{self.file}.fa", "w")
+        file = open(f"./{out_dir}/rComps_{self.file}.fa", "w")
         SeqIO.write(reverses, file, "fasta")
         file.close()
         return f"reverse complements wrote to {self.out_dir}_rComp.fa"
@@ -229,6 +238,7 @@ class DNA(Sequence):
         self.base_txt(out_dir=self.out_dir)
         self.base_csv(out_dir=self.out_dir)
         self.base_freq_graph(out_dir=self.out_dir)
+        print(f"Basic statistical analysis saved to ./{self.out_dir}/stats")
         return None
 
     def c_stats(self):
@@ -243,6 +253,14 @@ class DNA(Sequence):
         self.base_freq_graph(out_dir=self.out_dir)
         self.seq_orfGC_graph(out_dir=self.out_dir)
         self.seq_length_orf_graph(out_dir=self.out_dir)
+        print(f"Complex statistical analysis saved to ./{self.out_dir}/stats")
+        return None
+
+    def orfs(self):
+        """Calls each function neccessary for --save-orfs"""
+        print(f"Locating ORFs longer than {self.min_orf} bp in sequences in {self.file}")
+        self.reading_frames()
+        self.find_orfs()
         return None
 
     def tr(self):
@@ -252,18 +270,26 @@ class DNA(Sequence):
         self.reading_frames()
         self.r_complement(out_dir=self.out_dir)
         self.translate_seqs(out_dir=self.out_dir)
+        print(f"Reverse complements saved to ./{self.out_dir}/rComps_{self.file}.fa")
+        print(f"Translations saved to ./{self.out_dir}/translations")
         return None
 
     def core(self):
         """Logic for arguments in cli.py"""
         self.check_dna()
-        os.mkdir(path = f"./{self.out_dir}")
+        self.make_outdir()
         if self.basic_stats and self.complex_stats:
             print("The arguments '--basic-stats' and '--complex-stats' cannot be selected together")
+            os.rmdir(path = f"./{self.out_dir}")
+        elif not self.basic_stats and not self.complex_stats and not self.translate and not self.save_orfs:
+            print("Please select either '--basic-stats'/'--complex-stats' and or '--translate' and or '--save-orfs'")
+            os.rmdir(path = f"./{self.out_dir}")
         elif self.basic_stats and not self.complex_stats and not self.translate:
             self.b_stats()
         elif self.complex_stats and not self.basic_stats and not self.translate:
             self.c_stats()
+        elif self.save_orfs and not self.basic_stats and not self.complex_stats and not self.translate:
+            self.orfs()
         elif self.translate and not self.basic_stats and not self.complex_stats:
             self.tr()
         elif self.basic_stats and self.translate and not self.complex_stats:
@@ -272,5 +298,5 @@ class DNA(Sequence):
         elif self.complex_stats and self.translate and not self.basic_stats:
             self.c_stats()
             self.tr()
-        print("Analysis complete")
+        print("Thanks for using dnaStat")
         return None
