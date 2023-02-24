@@ -153,8 +153,12 @@ class DNA(Sequence):
         gc = []
         for x1, x2 in zip(self.GC, self.lengths):
             gc.append(round(x1/x2*100))
+        avg_orf_length = np.array(avg_orf_length)
+        gc = np.array(gc)
         plt.figure(figsize = (9,9), dpi = 600)
         plt.scatter(gc, avg_orf_length, color = "navy")
+        a, b = np.polyfit(gc, avg_orf_length, 1)
+        plt.plot(gc, a*gc+b, color = "lime")
         plt.title(f"Sequence GC content vs Average ORF length for sequences in {self.file}")
         plt.xlabel("Sequence GC content (%)")
         plt.ylabel("Average ORF length (bp)")
@@ -164,12 +168,15 @@ class DNA(Sequence):
 
     def seq_length_orf_graph(self, out_dir):
         """Creates a scatter plot of seq length vs total ORFs for sequence in input"""
-        seq_lengths = [length for length in self.lengths]
+        seq_lengths = np.array([length for length in self.lengths])
         orf_count = []
         for orfs in self.all_orfs:
             orf_count.append(len(orfs))
+        orf_count = np.array(orf_count)
         plt.figure(figsize = (9,9), dpi = 600)
         plt.scatter(seq_lengths, orf_count, color = "lime")
+        a, b = np.polyfit(seq_lengths, orf_count, 1)
+        plt.plot(seq_lengths, a*seq_lengths+b, color = "navy")
         plt.title(f"Sequence length vs Number of ORFs for sequences in {self.file}")
         plt.xlabel("Sequence length (bp)")
         plt.ylabel("Number of ORFs")
