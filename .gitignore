@@ -2,3 +2,4 @@ venv/
 .DS_store
 scripts/__pycache__/
 unittest/
+.vscode/
