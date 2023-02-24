@@ -10,7 +10,7 @@ Additional usage information can be found using the command
 
 Dependencies can be install using the command
 
-```pip3 install -r requirements.txt```
+```pip3 install -r ./docs/requirements.txt```
 
 The package was built as part of CSC8330 at Newcastle University.
 
@@ -27,3 +27,9 @@ The package was built as part of CSC8330 at Newcastle University.
 | --save-orfs | locate all ORFs in each sequence from input and save to files | False | n |
 
 ## Examples
+
+The file hoxC_sequences.fa is provided for example usage. The file contains 15 hoxC DNA sequences in .fa format from various organisms. At present, dnaStat is limited to .fa files. Please run all commands from the scripts directory or use relative paths.
+
+Run basic statistical analysis 
+
+```python3 dnaStat.py hoxC_sequences.fa test --basic-stat```

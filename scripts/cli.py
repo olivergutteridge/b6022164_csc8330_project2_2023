@@ -1,4 +1,4 @@
-from dna import DNA
+from scripts.dna import DNA
 import argparse
 
 def cli():
