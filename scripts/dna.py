@@ -188,7 +188,7 @@ class DNA(Sequence):
         plt.bar(ids, C, bottom = A + T, color = "cyan")
         plt.bar(ids, G, bottom = A + T + C, color = "fuchsia") 
         # add title, axis labels and legend
-        plt.title(f"Base frequencies for sequences in {self.file}", fontsize = 30)
+        plt.title(f"Base frequencies for sequences in {self.file}", fontsize = 25)
         plt.xlabel("Sequence IDs", fontsize = 15)
         plt.ylabel("Base Frequency", fontsize = 15)
         plt.legend(["A", "T", "C", "G"], prop = {"size": 20})
