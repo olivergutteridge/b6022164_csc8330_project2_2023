@@ -7,7 +7,7 @@ import shutil
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-from scripts.sequence import Sequence
+from sequence import Sequence
 import re
 
 class DNA(Sequence):
