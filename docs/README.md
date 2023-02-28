@@ -47,6 +47,8 @@ Cannot be used in conjuction with '--complex-stat'
 
 The outputs of this command are stored in ./test/stat. Files base_stats.txt and base_stats.csv contain basic summary statistics, base_frequency.png contains a stacked bar plot of base frequencies for sequences in input.
 
+#### Example base_frequency.png file
+
 ![base frequencies](../example_images/base_frequency.png?raw=true "base_frequency.png for hoxC_sequences.fa")
 
 ### --complex-stat
@@ -57,7 +59,13 @@ Cannot be used in conjuction with '--basic-stat'
 
 The outputs of this command are stored in ./test/stat. The directory contains the same outputs as '--basic-stat' and also GC_ORF.png and seqLength_ORF.png. Both are scatter plots of avg ORF length vs seq GC content and seq length vs ORF count respectively for sequences in input.
 
-<img src="../example_images/GC_ORF.png" width=70% height=70%> <img src="../example_images/GC_ORF.png" width=70% height=70%>
+#### Example GC_ORF.png file
+
+<img src="../example_images/GC_ORF.png" width=70% height=70%> 
+
+#### Example seqLength_ORF.png file
+
+<img src="../example_images/seqLength_ORF.png" width=70% height=70%>
 
 ### --save-orfs
 
