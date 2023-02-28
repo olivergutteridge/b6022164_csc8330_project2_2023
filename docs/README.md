@@ -57,7 +57,7 @@ Cannot be used in conjuction with '--basic-stat'
 
 ```python3 dnaStat.py hoxC_sequences.fa test --complex-stat```
 
-The outputs of this command are stored in ./test/stat. The directory contains the same outputs as '--basic-stat' and also GC_ORF.png and seqLength_ORF.png. Both are scatter plots of avg ORF length vs seq GC content and seq length vs ORF count respectively for sequences in input.
+The outputs of this command are stored in ./test/stat. The directory contains the same outputs as '--basic-stat' and also GC_ORF.png and seqLength_ORF.png. Both are scatter plots of avg ORF length against seq GC content and seq length against ORF count respectively for sequences in input.
 
 #### Example GC_ORF.png and seqLength_ORF.png files
 

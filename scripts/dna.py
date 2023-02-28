@@ -187,7 +187,8 @@ class DNA(Sequence):
         plt.bar(ids, T, bottom = A, color = "lime")
         plt.bar(ids, C, bottom = A + T, color = "cyan")
         plt.bar(ids, G, bottom = A + T + C, color = "fuchsia") 
-        # add axis labels and legend
+        # add labels and legend
+        plt.title(f"Base counts for {self.file}")
         plt.xlabel("Sequence IDs")
         plt.ylabel("Base Frequency")
         plt.legend(["A", "T", "C", "G"])
@@ -229,7 +230,8 @@ class DNA(Sequence):
         # caluclate  and add regression line https://www.python-graph-gallery.com/scatterplot-with-regression-fit-in-matplotlib
         a, b = np.polyfit(gc, avg_orf_length, 1)
         plt.plot(gc, a*gc+b, color = "lime")
-        # add axis labels
+        # add labels
+        plt.title(f"GC content against avg ORF for {self.file}")
         plt.xlabel("Sequence GC content (%)")
         plt.ylabel("Average ORF length (bp)")
         plt.tight_layout()
@@ -256,7 +258,8 @@ class DNA(Sequence):
         # caluclate  and add regression line https://www.python-graph-gallery.com/scatterplot-with-regression-fit-in-matplotlib
         a, b = np.polyfit(seq_lengths, orf_count, 1)
         plt.plot(seq_lengths, a*seq_lengths+b, color = "navy")
-        # add axis labels
+        # add labels
+        plt.title(f"Seq length against ORF count for {self.file}")
         plt.xlabel("Sequence length (bp)")
         plt.ylabel("Number of ORFs")
         plt.tight_layout()
