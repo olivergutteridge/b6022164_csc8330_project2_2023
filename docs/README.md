@@ -49,7 +49,7 @@ The outputs of this command are stored in ./test/stat. Files base_stats.txt and 
 
 #### Example base_frequency.png file
 
-![base frequencies](../example_images/base_frequency.png?raw=true "base_frequency.png for hoxC_sequences.fa")
+<img src="../example_images/base_frequency.png" width=90% height=90%>
 
 ### --complex-stat
 
