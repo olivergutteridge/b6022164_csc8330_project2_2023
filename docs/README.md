@@ -61,7 +61,7 @@ The outputs of this command are stored in ./test/stat. The directory contains th
 
 #### Example GC_ORF.png and seqLength_ORF.png files
 
-<img src="../example_images/GC_ORF.png" width=50% height=50%> <img src="../example_images/seqLength_ORF.png" width=50% height=50%>
+<img src="../example_images/GC_ORF.png" width=50% height=50%><img src="../example_images/seqLength_ORF.png" width=50% height=50%>
 
 ### --save-orfs
 
