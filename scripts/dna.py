@@ -181,18 +181,18 @@ class DNA(Sequence):
         C = np.array(self.C)
         G = np.array(self.G)
         # specify figure size and dpi
-        plt.figure(figsize = (25,15), dpi = 600)
+        plt.figure(dpi = 600)
         # plot stacked bars for each base
         plt.bar(ids, A, color = "navy")
         plt.bar(ids, T, bottom = A, color = "lime")
         plt.bar(ids, C, bottom = A + T, color = "cyan")
         plt.bar(ids, G, bottom = A + T + C, color = "fuchsia") 
-        # add title, axis labels and legend
-        plt.title(f"Base frequencies for sequences in {self.file}", fontsize = 20)
-        plt.xlabel("Sequence IDs", fontsize = 15)
-        plt.ylabel("Base Frequency", fontsize = 15)
-        plt.legend(["A", "T", "C", "G"], prop = {"size": 20})
-        plt.xticks(rotation = 45, fontsize = 10)
+        # add axis labels and legend
+        plt.xlabel("Sequence IDs")
+        plt.ylabel("Base Frequency")
+        plt.legend(["A", "T", "C", "G"])
+        plt.xticks(rotation = 90)
+        plt.tight_layout()
         # save figure to file and close
         plt.savefig(f"./{out_dir}/stats/base_frequency.png")
         plt.close()
@@ -223,16 +223,16 @@ class DNA(Sequence):
         avg_orf_length = np.array(avg_orf_length)
         gc = np.array(gc)
         # specify figure size and dpi
-        plt.figure(figsize = (9,9), dpi = 600)
+        plt.figure(dpi = 600)
         # plot scatter plot
         plt.scatter(gc, avg_orf_length, marker = "x", color = "navy")
         # caluclate  and add regression line https://www.python-graph-gallery.com/scatterplot-with-regression-fit-in-matplotlib
         a, b = np.polyfit(gc, avg_orf_length, 1)
         plt.plot(gc, a*gc+b, color = "lime")
-        # add title and axis labels
-        plt.title(f"Sequence GC content vs Average ORF length for sequences in {self.file}")
+        # add axis labels
         plt.xlabel("Sequence GC content (%)")
         plt.ylabel("Average ORF length (bp)")
+        plt.tight_layout()
         # save figure to file and close
         plt.savefig(f"./{out_dir}/stats/GC_ORF.png")
         plt.close()
@@ -250,16 +250,16 @@ class DNA(Sequence):
         # make orf_count np array
         orf_count = np.array(orf_count)
         # specify figure size and dpi
-        plt.figure(figsize = (9,9), dpi = 600)
+        plt.figure(dpi = 600)
         # plot scatter plot
         plt.scatter(seq_lengths, orf_count, marker = "x", color = "lime")
         # caluclate  and add regression line https://www.python-graph-gallery.com/scatterplot-with-regression-fit-in-matplotlib
         a, b = np.polyfit(seq_lengths, orf_count, 1)
         plt.plot(seq_lengths, a*seq_lengths+b, color = "navy")
-        # add axis and title labels
-        plt.title(f"Sequence length vs Number of ORFs for sequences in {self.file}")
+        # add axis labels
         plt.xlabel("Sequence length (bp)")
         plt.ylabel("Number of ORFs")
+        plt.tight_layout()
         # save figure to file and close
         plt.savefig(f"./{out_dir}/stats/seqLength_ORF.png")
         plt.close()
