@@ -49,7 +49,7 @@ The outputs of this command are stored in ./test/stat. Files base_stats.txt and 
 
 #### Example base_frequency.png file
 
-<img src="../example_images/base_frequency.png" width=90% height=90%>
+<img src="../example_images/base_frequency.png" width=75% height=75%>
 
 ### --complex-stat
 
@@ -61,7 +61,8 @@ The outputs of this command are stored in ./test/stat. The directory contains th
 
 #### Example GC_ORF.png and seqLength_ORF.png files
 
-<img src="../example_images/GC_ORF.png" width=50% height=50%><img src="../example_images/seqLength_ORF.png" width=50% height=50%>
+<img src="../example_images/GC_ORF.png" width=75% height=75%>
+<img src="../example_images/seqLength_ORF.png" width=75% height=75%>
 
 ### --save-orfs
 
