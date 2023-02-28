@@ -59,13 +59,9 @@ Cannot be used in conjuction with '--basic-stat'
 
 The outputs of this command are stored in ./test/stat. The directory contains the same outputs as '--basic-stat' and also GC_ORF.png and seqLength_ORF.png. Both are scatter plots of avg ORF length vs seq GC content and seq length vs ORF count respectively for sequences in input.
 
-#### Example GC_ORF.png file
+#### Example GC_ORF.png and seqLength_ORF.png files
 
-<img src="../example_images/GC_ORF.png" width=70% height=70%> 
-
-#### Example seqLength_ORF.png file
-
-<img src="../example_images/seqLength_ORF.png" width=70% height=70%>
+<img src="../example_images/GC_ORF.png" width=50% height=50%> <img src="../example_images/seqLength_ORF.png" width=50% height=50%>
 
 ### --save-orfs
 
