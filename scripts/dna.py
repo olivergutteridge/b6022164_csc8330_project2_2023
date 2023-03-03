@@ -139,10 +139,16 @@ class DNA(Sequence):
         """Creates a text file containing basic statistics about each sequence in input"""
         # empty output string
         output = ""
+        if self.complex_stats:
+            avg_orf = self.avg_orf()
         # for loop in length of number of sequences in input
         for i in range(len(self.records)):
             # add data to output string
-            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.GC[i])/self.lengths[i]*100)}%\nORFs: {len(self.all_orfs[i])}\n\n"
+            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.GC[i])/self.lengths[i]*100)}%\nORFs: {len(self.all_orfs[i])}\n"
+            if self.complex_stats:
+                output += f"Avg ORF length (bp): {round(avg_orf[i])}\n\n"
+            else:
+                output += "\n"
         # write output to .txt file
         file = open(f"./{out_dir}/stats/base_stats.txt", "w")
         file.write(output)
@@ -198,9 +204,9 @@ class DNA(Sequence):
         plt.savefig(f"./{out_dir}/stats/base_frequency.png")
         plt.close()
         return "base_frequency.png created"
-
-    def seq_orfgc_graph(self, out_dir):
-        """Creates a scatter plot of GC content vs avg ORF length for sequence in input"""
+    
+    def avg_orf(self):
+        """Calculates avg ORF length for sequence in input"""
         # empty avg_orf_length list
         avg_orf_length  =  []
         # access orfs of each sequence 
@@ -214,15 +220,23 @@ class DNA(Sequence):
             avg_length = statistics.mean(orf_lengths)
             # append to avg_orf_length
             avg_orf_length.append(avg_length)
+        return avg_orf_length
+    
+    def gc_content(self):
+        """Calulcates % gc content for sequence in input"""
         # empty gc list
         gc = []
         # for loop over self.GC and self.lengths
         for x1, x2 in zip(self.GC, self.lengths):
             # append calculated gc content
             gc.append(round(x1/x2*100))
-        # make both lists np arrays
-        avg_orf_length = np.array(avg_orf_length)
-        gc = np.array(gc)
+        return gc
+
+    def seq_orfgc_graph(self, out_dir):
+        """Creates a scatter plot of GC content vs avg ORF length for sequence in input"""
+        # np arrays of avg orf and gc content
+        avg_orf_length  =  np.array(self.avg_orf())
+        gc = np.array(self.gc_content())
         # specify figure size and dpi
         plt.figure(dpi = 600)
         # plot scatter plot
