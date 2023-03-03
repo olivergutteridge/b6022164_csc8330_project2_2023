@@ -141,12 +141,13 @@ class DNA(Sequence):
         output = ""
         if self.complex_stats:
             avg_orf = self.avg_orf()
+            orf_count = self.orf_count()
         # for loop in length of number of sequences in input
         for i in range(len(self.records)):
             # add data to output string
-            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.GC[i])/self.lengths[i]*100)}%\nORFs: {len(self.all_orfs[i])}\n"
+            output += f"{self.records[i].id}\nLength: {self.lengths[i]}\nA: {self.A[i]}   ({round(self.A[i]/self.lengths[i]*100)}%)\nT: {self.T[i]}   ({round(self.T[i]/self.lengths[i]*100)}%)\nC: {self.C[i]}   ({round(self.C[i]/self.lengths[i]*100)}%)\nG: {self.G[i]}   ({round(self.G[i]/self.lengths[i]*100)}%)\nGC: {round((self.GC[i])/self.lengths[i]*100)}%\n"
             if self.complex_stats:
-                output += f"Avg ORF length (bp): {round(avg_orf[i])}\n\n"
+                output += f"ORF(s): {orf_count[i]}\nMean ORF length(bp): {round(avg_orf[i])}\n\n"
             else:
                 output += "\n"
         # write output to .txt file
@@ -162,17 +163,18 @@ class DNA(Sequence):
         file = open(f"./{out_dir}/stats/base_stats.csv", "w", encoding="UTF8")
         writer = csv.writer(file)
         # write headers to file
-        headers = ["sequence_id", "length", "A", "T", "C", "G", "GC", "ORFs"]
+        headers = ["sequence_id", "length", "A", "T", "C", "G", "GC"]
         if self.complex_stats:
             avg_orf = self.avg_orf()
-            headers.append("avg ORF")
+            orf_count = self.orf_count()
+            headers.extend(("ORF(s)", "Mean ORF(bp)"))
         writer.writerow(headers)
         # for loop in length of number of sequences in input
         for i in range(len(self.records)):
             # create list of data + write to file
-            data = [self.records[i].id, self.lengths[i], self.A[i], self.T[i], self.C[i], self.G[i], self.GC[i], len(self.all_orfs[i])]
+            data = [self.records[i].id, self.lengths[i], self.A[i], self.T[i], self.C[i], self.G[i], self.GC[i]]
             if self.complex_stats:
-                data.append(round(avg_orf[i]))
+                data.extend((orf_count[i], round(avg_orf[i])))
             writer.writerow(data)
         # close file
         file.close()
