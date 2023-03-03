@@ -236,6 +236,15 @@ class DNA(Sequence):
             # append calculated gc content
             gc.append(round(x1/x2*100))
         return gc
+    
+    def orf_count(self):
+        """Calculates ORF count for sequence in input"""
+        # empty orf_count list
+        orf_count = []
+        # for loop to access individual orf counts and append orf count orf_count
+        for orfs in self.all_orfs:
+            orf_count.append(len(orfs))
+        return orf_count
 
     def seq_orfgc_graph(self, out_dir):
         """Creates a scatter plot of GC content vs avg ORF length for sequence in input"""
@@ -261,15 +270,9 @@ class DNA(Sequence):
 
     def seq_length_orf_graph(self, out_dir):
         """Creates a scatter plot of seq length vs total ORFs for sequence in input"""
-        # create np array of sequence lengths
+        # create np array of sequence lengths and orf counts
         seq_lengths = np.array([length for length in self.lengths])
-        # empty orf_count list
-        orf_count = []
-        # for loop to access individual orf counts and append orf count orf_count
-        for orfs in self.all_orfs:
-            orf_count.append(len(orfs))
-        # make orf_count np array
-        orf_count = np.array(orf_count)
+        orf_count = np.array(self.orf_count())
         # specify figure size and dpi
         plt.figure(dpi = 600)
         # plot scatter plot
