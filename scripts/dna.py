@@ -2,6 +2,7 @@ import statistics
 from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
+from Bio.Blast import NCBIWWW, NCBIXML
 import os
 import shutil
 import csv
@@ -337,6 +338,14 @@ class DNA(Sequence):
             SeqIO.write(translations, file, "fasta")
             file.close()
         return f"translations for sequences in {self.file} saved to ./{out_dir}/translations/"
+    
+    def id_seqs(self):
+        ids = []
+        for record in self.records:
+            result_handle = NCBIWWW.qblast("blastn","nt", record.seq)
+            blast_result = result_handle.read()
+            ids.append(blast_result[0].title)
+        return ids
 
     def b_stats(self):
         """Calls each function neccessary for --basic-stats"""
