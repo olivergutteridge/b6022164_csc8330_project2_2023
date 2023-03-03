@@ -163,11 +163,16 @@ class DNA(Sequence):
         writer = csv.writer(file)
         # write headers to file
         headers = ["sequence_id", "length", "A", "T", "C", "G", "GC", "ORFs"]
+        if self.complex_stats:
+            avg_orf = self.avg_orf()
+            headers.append("avg ORF")
         writer.writerow(headers)
         # for loop in length of number of sequences in input
         for i in range(len(self.records)):
             # create list of data + write to file
             data = [self.records[i].id, self.lengths[i], self.A[i], self.T[i], self.C[i], self.G[i], self.GC[i], len(self.all_orfs[i])]
+            if self.complex_stats:
+                data.append(round(avg_orf[i]))
             writer.writerow(data)
         # close file
         file.close()
